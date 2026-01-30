@@ -49,6 +49,7 @@ def load(ctx: click.Context, pgn_files: tuple[Path, ...]) -> None:
                 year=game.year,
                 event=game.event,
                 result=game.result,
+                eco=game.eco,
                 pgn=game.pgn,
                 moves=",".join(game.moves),
             )
@@ -74,13 +75,13 @@ def list_cmd(ctx: click.Context) -> None:
         click.echo("No games loaded. Use 'chessprompter load <pgn_file>' to load games.")
         return
 
-    click.echo(f"{'ID':<6} {'White':<20} {'Black':<20} {'Year':<6} {'Result':<10} {'Event'}")
-    click.echo("-" * 90)
-    for game_id, white, black, year, event, result in games:
+    click.echo(f"{'ID':<6} {'White':<20} {'Black':<20} {'Year':<6} {'Result':<10} {'ECO'}")
+    click.echo("-" * 80)
+    for game_id, white, black, year, result, eco in games:
         year_str = str(year) if year else "-"
         result_str = result if result else "-"
-        event_str = (event[:25] + "...") if event and len(event) > 28 else (event or "-")
-        click.echo(f"{game_id:<6} {white:<20} {black:<20} {year_str:<6} {result_str:<10} {event_str}")
+        eco_str = eco or "-"
+        click.echo(f"{game_id:<6} {white:<20} {black:<20} {year_str:<6} {result_str:<10} {eco_str}")
 
 
 @main.command()

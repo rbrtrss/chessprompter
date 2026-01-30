@@ -15,13 +15,14 @@ class ParsedGame:
     year: int | None
     event: str | None
     result: str | None
+    eco: str | None
     pgn: str
     moves: list[str]
 
 
 def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
     """Parse a PGN file and yield parsed games."""
-    with open(pgn_path) as pgn_file:
+    with open(pgn_path, encoding="utf-8", errors="replace") as pgn_file:
         while True:
             game = chess.pgn.read_game(pgn_file)
             if game is None:
@@ -47,6 +48,10 @@ def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
             if result == "*":
                 result = None
 
+            eco = headers.get("ECO")
+            if eco == "?":
+                eco = None
+
             moves = []
             board = game.board()
             for move in game.mainline_moves():
@@ -63,6 +68,7 @@ def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
                 year=year,
                 event=event,
                 result=result,
+                eco=eco,
                 pgn=pgn_str,
                 moves=moves,
             )
