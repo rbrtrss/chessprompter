@@ -46,6 +46,9 @@ def load(ctx: click.Context, pgn_files: tuple[Path, ...]) -> None:
                 conn,
                 white=game.white,
                 black=game.black,
+                white_players=game.white_players,
+                black_players=game.black_players,
+                is_consultation=game.is_consultation,
                 year=game.year,
                 event=game.event,
                 result=game.result,
@@ -75,13 +78,16 @@ def list_cmd(ctx: click.Context) -> None:
         click.echo("No games loaded. Use 'chessprompter load <pgn_file>' to load games.")
         return
 
-    click.echo(f"{'ID':<6} {'White':<20} {'Black':<20} {'Year':<6} {'Result':<10} {'ECO'}")
-    click.echo("-" * 80)
-    for game_id, white, black, year, result, eco in games:
+    click.echo(f"{'ID':<6} {'White':<25} {'Black':<25} {'Year':<6} {'Result':<10} {'ECO'}")
+    click.echo("-" * 90)
+    for game_id, white, black, year, result, eco, is_consultation in games:
         year_str = str(year) if year else "-"
         result_str = result if result else "-"
         eco_str = eco or "-"
-        click.echo(f"{game_id:<6} {white:<20} {black:<20} {year_str:<6} {result_str:<10} {eco_str}")
+        # Truncate long names for display
+        white_disp = (white[:22] + "...") if len(white) > 25 else white
+        black_disp = (black[:22] + "...") if len(black) > 25 else black
+        click.echo(f"{game_id:<6} {white_disp:<25} {black_disp:<25} {year_str:<6} {result_str:<10} {eco_str}")
 
 
 @main.command()
@@ -102,14 +108,14 @@ def play(ctx: click.Context, game_id: int) -> None:
         click.echo(f"Game with ID {game_id} not found.", err=True)
         return
 
-    game_id, white, black, year, event, result, pgn, moves_str = game
+    game_id, white, black, year, event, result, pgn, moves_str, is_consultation = game
     moves = moves_str.split(",") if moves_str else []
 
     if not moves:
         click.echo("This game has no moves.", err=True)
         return
 
-    play_game(white, black, year, event, result, moves)
+    play_game(white, black, year, event, result, moves, is_consultation)
 
 
 if __name__ == "__main__":

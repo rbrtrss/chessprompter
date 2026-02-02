@@ -29,10 +29,16 @@ def play_game(
     event: str | None,
     result: str | None,
     moves: list[str],
+    is_consultation: bool = False,
 ) -> None:
     """Interactively play through a game move by move."""
     print("\n" + "=" * 60)
-    print(f"  {white} vs {black}")
+    if is_consultation:
+        print(f"  {white}")
+        print(f"    vs")
+        print(f"  {black}")
+    else:
+        print(f"  {white} vs {black}")
     if year:
         print(f"  Year: {year}")
     if event:

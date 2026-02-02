@@ -1,9 +1,21 @@
 """PGN file parsing utilities."""
 
+import re
 import chess.pgn
 from pathlib import Path
 from typing import Iterator
 from dataclasses import dataclass
+
+
+def detect_consultation_players(name: str) -> list[str]:
+    """Detect and split consultation players from a player name string.
+
+    Splits on " and " or " & " patterns.
+    Returns a list of individual player names.
+    """
+    pattern = r'\s+and\s+|\s*&\s*'
+    players = re.split(pattern, name, flags=re.IGNORECASE)
+    return [p.strip() for p in players if p.strip()]
 
 
 @dataclass
@@ -12,6 +24,9 @@ class ParsedGame:
 
     white: str
     black: str
+    white_players: list[str]
+    black_players: list[str]
+    is_consultation: bool
     year: int | None
     event: str | None
     result: str | None
@@ -62,9 +77,16 @@ def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
             exporter = chess.pgn.StringExporter(headers=True, variations=False, comments=False)
             pgn_str = game.accept(exporter)
 
+            white_players = detect_consultation_players(white)
+            black_players = detect_consultation_players(black)
+            is_consultation = len(white_players) > 1 or len(black_players) > 1
+
             yield ParsedGame(
                 white=white,
                 black=black,
+                white_players=white_players,
+                black_players=black_players,
+                is_consultation=is_consultation,
                 year=year,
                 event=event,
                 result=result,

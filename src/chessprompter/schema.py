@@ -3,7 +3,10 @@
 DIM_PLAYER_DDL = """
 CREATE TABLE IF NOT EXISTS dim_player (
     player_id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL UNIQUE
+    name TEXT NOT NULL UNIQUE,
+    surname TEXT,
+    first_name TEXT,
+    display_name TEXT NOT NULL
 );
 """
 
@@ -44,6 +47,9 @@ CREATE TABLE IF NOT EXISTS fact_games (
     eco TEXT,
     pgn TEXT,
     moves TEXT,
+    white_display TEXT,
+    black_display TEXT,
+    is_consultation BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (game_id),
     FOREIGN KEY (white) REFERENCES dim_player(player_id),
     FOREIGN KEY (black) REFERENCES dim_player(player_id),
@@ -53,5 +59,17 @@ CREATE TABLE IF NOT EXISTS fact_games (
 );
 """
 
+GAME_PLAYERS_DDL = """
+CREATE TABLE IF NOT EXISTS game_players (
+    game_id INTEGER NOT NULL,
+    player_id INTEGER NOT NULL,
+    side TEXT NOT NULL CHECK (side IN ('white', 'black')),
+    position INTEGER NOT NULL DEFAULT 1,
+    PRIMARY KEY (game_id, player_id, side),
+    FOREIGN KEY (game_id) REFERENCES fact_games(game_id),
+    FOREIGN KEY (player_id) REFERENCES dim_player(player_id)
+);
+"""
+
 # Order for table creation (dimensions before fact)
-ALL_DDL = [DIM_PLAYER_DDL, DIM_DATE_DDL, DIM_EVENT_DDL, DIM_RESULT_DDL, FACT_GAMES_DDL]
+ALL_DDL = [DIM_PLAYER_DDL, DIM_DATE_DDL, DIM_EVENT_DDL, DIM_RESULT_DDL, FACT_GAMES_DDL, GAME_PLAYERS_DDL]
