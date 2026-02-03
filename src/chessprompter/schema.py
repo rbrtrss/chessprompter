@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS fact_games (
     black INTEGER NOT NULL,
     result_id INTEGER NOT NULL,
     eco TEXT,
-    pgn TEXT,
     moves TEXT,
     white_display TEXT,
     black_display TEXT,

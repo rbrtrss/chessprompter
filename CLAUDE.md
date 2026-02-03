@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 chessprompter is a minimalistic CLI tool for training chess with a physical board. It displays chess game moves sequentially from PGN files, allowing users to follow along on their physical board without distractions.
 
+## Plan Mode
+
+- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
+- At the end of each plan, give me a list of unresolved questions to answer, if any.
+
 ## Development Commands
 
 ```bash

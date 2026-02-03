@@ -3,7 +3,7 @@
 import click
 from pathlib import Path
 
-from .database import get_connection, init_db, insert_game, list_games, get_game
+from .database import get_connection, init_db, insert_game, list_games, get_game, game_exists
 from .pgn_parser import parse_pgn_file
 from .player import play_game
 
@@ -38,10 +38,17 @@ def load(ctx: click.Context, pgn_files: tuple[Path, ...]) -> None:
     init_db(conn)
 
     total_loaded = 0
+    total_skipped = 0
     for pgn_path in pgn_files:
         click.echo(f"Loading {pgn_path}...")
         count = 0
+        skipped = 0
         for game in parse_pgn_file(pgn_path):
+            moves_str = ",".join(game.moves)
+            if game_exists(conn, game.white, game.black, moves_str):
+                click.echo(f"  Skipping duplicate: {game.white} vs {game.black}")
+                skipped += 1
+                continue
             insert_game(
                 conn,
                 white=game.white,
@@ -53,15 +60,15 @@ def load(ctx: click.Context, pgn_files: tuple[Path, ...]) -> None:
                 event=game.event,
                 result=game.result,
                 eco=game.eco,
-                pgn=game.pgn,
-                moves=",".join(game.moves),
+                moves=moves_str,
             )
             count += 1
-        click.echo(f"  Loaded {count} game(s)")
+        click.echo(f"  Loaded {count} game(s), skipped {skipped} duplicate(s)")
         total_loaded += count
+        total_skipped += skipped
 
     conn.close()
-    click.echo(f"Total: {total_loaded} game(s) loaded")
+    click.echo(f"Total: {total_loaded} game(s) loaded, {total_skipped} duplicate(s) skipped")
 
 
 @main.command(name="list")
@@ -108,7 +115,7 @@ def play(ctx: click.Context, game_id: int) -> None:
         click.echo(f"Game with ID {game_id} not found.", err=True)
         return
 
-    game_id, white, black, year, event, result, pgn, moves_str, is_consultation = game
+    game_id, white, black, year, event, result, moves_str, is_consultation = game
     moves = moves_str.split(",") if moves_str else []
 
     if not moves:

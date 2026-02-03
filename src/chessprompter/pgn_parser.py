@@ -31,7 +31,6 @@ class ParsedGame:
     event: str | None
     result: str | None
     eco: str | None
-    pgn: str
     moves: list[str]
 
 
@@ -74,9 +73,6 @@ def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
                 moves.append(san)
                 board.push(move)
 
-            exporter = chess.pgn.StringExporter(headers=True, variations=False, comments=False)
-            pgn_str = game.accept(exporter)
-
             white_players = detect_consultation_players(white)
             black_players = detect_consultation_players(black)
             is_consultation = len(white_players) > 1 or len(black_players) > 1
@@ -91,6 +87,5 @@ def parse_pgn_file(pgn_path: Path) -> Iterator[ParsedGame]:
                 event=event,
                 result=result,
                 eco=eco,
-                pgn=pgn_str,
                 moves=moves,
             )

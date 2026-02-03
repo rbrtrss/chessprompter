@@ -275,7 +275,6 @@ def insert_game(
     event: str | None,
     result: str | None,
     eco: str | None,
-    pgn: str,
     moves: str,
 ) -> int:
     """Insert a game into the database and return its ID."""
@@ -294,12 +293,12 @@ def insert_game(
 
     result_row = conn.execute(
         """
-        INSERT INTO fact_games (game_id, date_id, event_id, white, black, result_id, eco, pgn, moves,
+        INSERT INTO fact_games (game_id, date_id, event_id, white, black, result_id, eco, moves,
                                 white_display, black_display, is_consultation)
-        VALUES ((SELECT COALESCE(MAX(game_id), 0) + 1 FROM fact_games), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES ((SELECT COALESCE(MAX(game_id), 0) + 1 FROM fact_games), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING game_id
         """,
-        [date_id, event_id, white_id, black_id, result_id, eco, pgn, moves,
+        [date_id, event_id, white_id, black_id, result_id, eco, moves,
          white_display, black_display, is_consultation],
     ).fetchone()
     game_id = result_row[0]
@@ -336,6 +335,21 @@ def list_games(conn: duckdb.DuckDBPyConnection) -> list[tuple]:
     ).fetchall()
 
 
+def game_exists(conn: duckdb.DuckDBPyConnection, white: str, black: str, moves: str) -> bool:
+    """Check if a game with the same players and moves already exists."""
+    row = conn.execute(
+        """
+        SELECT 1 FROM fact_games g
+        JOIN dim_player pw ON g.white = pw.player_id
+        JOIN dim_player pb ON g.black = pb.player_id
+        WHERE pw.name = ? AND pb.name = ? AND g.moves = ?
+        LIMIT 1
+        """,
+        [white, black, moves],
+    ).fetchone()
+    return row is not None
+
+
 def get_game(conn: duckdb.DuckDBPyConnection, game_id: int) -> tuple | None:
     """Get a game by its ID."""
     return conn.execute(
@@ -347,7 +361,6 @@ def get_game(conn: duckdb.DuckDBPyConnection, game_id: int) -> tuple | None:
             d.year,
             e.name AS event,
             r.result,
-            g.pgn,
             g.moves,
             g.is_consultation
         FROM fact_games g
