@@ -5,15 +5,9 @@ chessprompter is a command line tool that shows the plays of a chess game sequen
 ## Installation
 
 ```bash
-pip install chessprompter
-```
-
-Or install from source:
-
-```bash
 git clone https://github.com/yourusername/chessprompter.git
 cd chessprompter
-pip install .
+uv tool install .
 ```
 
 ## Usage
