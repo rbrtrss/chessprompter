@@ -11,16 +11,20 @@ chessprompter is a minimalistic CLI tool for training chess with a physical boar
 - Make the plan extremely concise. Sacrifice grammar for the sake of concision.
 - At the end of each plan, give me a list of unresolved questions to answer, if any.
 
+## Development Rules
+
+- **Always use `uv` for all Python operations.** Do not use pip, python, or other tools directly. Use `uv run`, `uv sync`, `uv add`, etc.
+
 ## Development Commands
 
 ```bash
-# Install in development mode
-pip install -e .
+# Sync dependencies
+uv sync
 
 # Run the CLI
-chessprompter load game.pgn     # Import PGN files into database
-chessprompter list              # List all loaded games
-chessprompter play <game_id>    # Step through a game move by move
+uv run chessprompter load game.pgn     # Import PGN files into database
+uv run chessprompter list              # List all loaded games
+uv run chessprompter play <game_id>    # Step through a game move by move
 ```
 
 ## Architecture

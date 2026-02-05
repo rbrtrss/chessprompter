@@ -58,3 +58,7 @@ chessprompter --db /path/to/games.duckdb load game.pgn
 ```
 
 By default, games are stored in `~/.chessprompter/games.duckdb`.
+
+## Database Schema
+
+See [schema-diagram.md](schema-diagram.md) for the ER diagram.

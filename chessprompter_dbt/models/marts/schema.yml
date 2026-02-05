@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: player_stats
+    description: Player performance statistics (wins, losses, draws, win rate)
+    columns:
+      - name: player_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+
+  - name: opening_stats
+    description: Opening (ECO code) performance statistics
+    columns:
+      - name: eco
+        description: ECO opening code
+        tests:
+          - unique
+          - not_null

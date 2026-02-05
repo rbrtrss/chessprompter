@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: chessprompter
+    schema: main
+    tables:
+      - name: fact_games
+      - name: dim_player
+      - name: dim_date
+      - name: dim_event
+      - name: dim_result
+      - name: game_players
+
+models:
+  - name: stg_games
+    description: Denormalized view of all games with dimension attributes
+    columns:
+      - name: game_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
