@@ -32,8 +32,8 @@ erDiagram
         int game_id PK
         int date_id FK
         int event_id FK
-        int white FK
-        int black FK
+        int playing_white_id FK
+        int playing_black_id FK
         int result_id FK
         text eco
         text moves
@@ -49,8 +49,8 @@ erDiagram
         int position
     }
 
-    dim_player ||--o{ fact_games : "white"
-    dim_player ||--o{ fact_games : "black"
+    dim_player ||--o{ fact_games : "playing_white_id"
+    dim_player ||--o{ fact_games : "playing_black_id"
     dim_date ||--o{ fact_games : "date_id"
     dim_event ||--o{ fact_games : "event_id"
     dim_result ||--o{ fact_games : "result_id"

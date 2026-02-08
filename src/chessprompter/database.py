@@ -113,10 +113,10 @@ def migrate_schema(conn: duckdb.DuckDBPyConnection) -> None:
 
     games_needing_migration = conn.execute(
         """
-        SELECT g.game_id, pw.name AS white_name, pb.name AS black_name, g.white, g.black
+        SELECT g.game_id, pw.name AS white_name, pb.name AS black_name, g.playing_white_id, g.playing_black_id
         FROM fact_games g
-        JOIN dim_player pw ON g.white = pw.player_id
-        JOIN dim_player pb ON g.black = pb.player_id
+        JOIN dim_player pw ON g.playing_white_id = pw.player_id
+        JOIN dim_player pb ON g.playing_black_id = pb.player_id
         WHERE g.white_display IS NULL
         """
     ).fetchall()
@@ -293,7 +293,7 @@ def insert_game(
 
     result_row = conn.execute(
         """
-        INSERT INTO fact_games (game_id, date_id, event_id, white, black, result_id, eco, moves,
+        INSERT INTO fact_games (game_id, date_id, event_id, playing_white_id, playing_black_id, result_id, eco, moves,
                                 white_display, black_display, is_consultation)
         VALUES ((SELECT COALESCE(MAX(game_id), 0) + 1 FROM fact_games), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING game_id
@@ -340,8 +340,8 @@ def game_exists(conn: duckdb.DuckDBPyConnection, white: str, black: str, moves: 
     row = conn.execute(
         """
         SELECT 1 FROM fact_games g
-        JOIN dim_player pw ON g.white = pw.player_id
-        JOIN dim_player pb ON g.black = pb.player_id
+        JOIN dim_player pw ON g.playing_white_id = pw.player_id
+        JOIN dim_player pb ON g.playing_black_id = pb.player_id
         WHERE pw.name = ? AND pb.name = ? AND g.moves = ?
         LIMIT 1
         """,
