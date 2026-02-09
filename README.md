@@ -53,6 +53,44 @@ chessprompter --db /path/to/games.duckdb load game.pgn
 
 By default, games are stored in `~/.chessprompter/games.duckdb`.
 
+## Analytics with dbt
+
+The project includes a [dbt](https://docs.getdbt.com/) project (`chessprompter_dbt/`) that transforms the raw star schema into analytical models. It uses the `dbt-duckdb` adapter to work directly with the same DuckDB database.
+
+See the [tutorial](chessprompter_dbt/TUTORIAL.md) for a detailed walkthrough of the dbt setup and concepts.
+
+### Running dbt
+
+All dbt commands must be run from the `chessprompter_dbt/` directory:
+
+```bash
+cd chessprompter_dbt
+```
+
+Build all models and run tests:
+
+```bash
+uv run dbt build
+```
+
+Run models only (without tests):
+
+```bash
+uv run dbt run
+```
+
+Run tests only:
+
+```bash
+uv run dbt test
+```
+
+### Models
+
+- **Staging**: `stg_games` — denormalized view joining fact and dimension tables
+- **Marts**: `player_stats` — win/loss/draw statistics per player
+- **Marts**: `opening_stats` — performance statistics by ECO opening code
+
 ## Database Schema
 
 See [schema-diagram.md](schema-diagram.md) for the ER diagram.
