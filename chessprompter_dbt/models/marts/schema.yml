@@ -2,19 +2,19 @@ version: 2
 
 models:
   - name: player_stats
-    description: Player performance statistics (wins, losses, draws, win rate)
+    description: Win/loss/draw statistics aggregated per player
     columns:
-      - name: player_id
-        description: Primary key
-        tests:
+      - name: player
+        description: Player display name
+        data_tests:
           - unique
           - not_null
 
   - name: opening_stats
-    description: Opening (ECO code) performance statistics
+    description: Game statistics aggregated by ECO opening code
     columns:
       - name: eco
         description: ECO opening code
-        tests:
+        data_tests:
           - unique
           - not_null

@@ -1,0 +1,6 @@
+chessprompter_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ~/.chessprompter/games.duckdb

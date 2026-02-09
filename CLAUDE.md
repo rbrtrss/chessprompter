@@ -40,3 +40,6 @@ The codebase follows a simple layered structure in `src/chessprompter/`:
 ### Database Schema
 
 Star schema stored in `~/.chessprompter/games.duckdb`. See [schema-diagram.md](schema-diagram.md) for ER diagram.
+
+### Commit Guidelines
+- Before commiting changes, **ALWAYS** use the @.claude/skills/generating-commit-messages skill to generate commit messages
